@@ -1,12 +1,11 @@
 package GLPOO_ESIEA_1617_Groupe_Borgo;
 
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 
 public class Garden {
@@ -25,8 +24,22 @@ public class Garden {
 	
 	private File garden_file = null;
 	
-	public Garden(Game game) {
+	public Garden(Game game, int size_x, int size_y) {
+		this.game = game;
 		
+		this.size_x = size_x;
+		this.size_y = size_y;
+		
+		this.map = new Item[size_x][size_y];
+		this.egg_map = new int[size_x][size_y];
+		for(int i=0; i<this.size_x; i++) {
+			for(int j=0; j<this.size_y; j++) {
+				this.map[i][j] = Item.NO_ITEM;
+				this.egg_map[i][j] = 0;
+			}
+		}
+		
+		this.list_kids = new ArrayList<Kid>();       
 	}
 	
 	public Garden(Game game, File file) {
@@ -55,8 +68,6 @@ public class Garden {
 							this.egg_map[i][j] = 0;
 						}
 					}
-					
-					this.game.window.setSize(this.size_x*30, this.size_y*30);
 				}
 				else if(line.charAt(0) == 'C') {
 					if(this.map != null) {
@@ -107,7 +118,7 @@ public class Garden {
 			e.printStackTrace();
 		}
 		
-		this.game.hud.repaint();
+		this.game.hud_game.repaint();
 	}
 	
 	public Item[][] getMap() {

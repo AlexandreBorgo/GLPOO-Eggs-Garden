@@ -8,21 +8,27 @@ import javax.swing.SwingUtilities;
 public class Game {
 	
 	public Window window;
-	public HUD hud;
+	public HUD_game hud_game;
 	
 	public Garden garden = null;
-	
-	private Thread thread;
+
+	private Thread thread = null;
+	private Thread thread_editor = null;
 	private boolean anim = true;
+	private boolean game_play = true;
+	private boolean editor_play = true;
+	
+	private State state = State.GAME_STATE;
 	
 	public Game() {
+		hud_game = new HUD_game(this);
 		window = new Window(this);
-		hud = new HUD(this);
 	}
 
 	public void play() {
 		if(this.garden != null) {
 			if(this.thread == null) {
+				this.anim = true;
 				thread = new Thread(new Play());
 				thread.start();
 			}
@@ -37,6 +43,20 @@ public class Game {
 		}
 	}
 	
+	public void editor() {
+		if(this.garden != null) {
+			if(this.thread_editor == null) {
+				thread_editor = new Thread(new Editor());
+				thread_editor.start();
+			}
+		}
+		else {
+			JOptionPane.showMessageDialog(this.window, "No garden loaded.", "Editor error", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+	
+	
+	
 	public void pause() {
 		if(this.thread != null && this.thread.isAlive()) {
 			this.anim = false;
@@ -46,16 +66,19 @@ public class Game {
 		}
 	}
 	
+	public void stop() {
+		this.thread.interrupt();
+	}
+	
 	class Play implements Runnable {
 
 		public void run() {
-			boolean play = true;
 			boolean stop;
 			
 			int size_x = garden.getSizeX();
 			int size_y = garden.getSizeY();
 			
-			while(play) {
+			while(game_play) {
 				if(anim) {
 					stop = true;
 					ArrayList<Kid> list_kids = garden.getKidsList(); 
@@ -84,7 +107,7 @@ public class Game {
 										}	
 									}
 									else if(d.equals("E")) {
-										if(px < size_y-1) {
+										if(px < size_x-1) {
 											list_kids.get(i).setPosX(px+1);
 										}	
 									}
@@ -116,10 +139,10 @@ public class Game {
 					}
 					
 					if(stop) {
-						play = false;
+						game_play = false;
 					}
 										
-					callRepaint();
+					this.callRepaint();
 				}
 				
 				try {
@@ -136,10 +159,59 @@ public class Game {
 				
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						hud.repaint();
+						hud_game.repaint();
 					}
 				});
 			}
 		}
+	}
+	
+	class Editor implements Runnable {
+
+		public void run() {
+			boolean stop;
+			
+			while(editor_play) {
+				
+				this.callRepaint();
+				
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}				
+			}
+		}
+		
+		public void callRepaint() {
+			if(!SwingUtilities.isEventDispatchThread()) {
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						hud_game.repaint();
+					}
+				});
+			}
+		}
+	}
+	
+	public State getState() {
+		return this.state;
+	}
+	
+	public void setState(State state) {
+		this.state = state;
+	}
+
+	public void setAnim(boolean anim) {
+		this.anim = anim;
+	}
+	
+	public void setGamePlay(boolean game_play) {
+		this.game_play = game_play;
+	}
+	
+	public void setEditorPlay(boolean editor_play) {
+		this.editor_play = editor_play;
 	}
 }

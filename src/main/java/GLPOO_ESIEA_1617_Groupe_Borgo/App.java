@@ -8,6 +8,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        Game game = new Game();
+        @SuppressWarnings("unused")
+		Game game = new Game();
     }
 }
