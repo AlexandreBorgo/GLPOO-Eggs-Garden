@@ -88,12 +88,14 @@ public class Game {
 						int py = list_kids.get(i).getPosY();
 						ArrayList<String> path = list_kids.get(i).getPath();
 						
-						if(garden.getItemAt(px, py) == Item.EGG) {
+						if(garden.getItemAt(px, py) == Item.EGG && list_kids.get(i).getNext() == false) {
 							list_kids.get(i).addEgg();
 							garden.takeEgg(px, py);
-							stop = false;							
+							stop = false;
+							list_kids.get(i).setNext(true);
 						}
 						else {		
+							list_kids.get(i).setNext(false);
 							if(path.size() > 0) {
 								if(path.get(0).equals("A")) {
 									if(d.equals("N")) {

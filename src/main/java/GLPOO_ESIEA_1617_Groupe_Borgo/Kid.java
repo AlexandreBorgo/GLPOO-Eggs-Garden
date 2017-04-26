@@ -9,6 +9,7 @@ public class Kid {
 	private int pos_x;
 	private int pos_y;
 	private String direction;
+	private boolean next = false;
 	
 	public Kid(int pos_x, int pos_y, String direction, ArrayList<String> path, String name) {
 		this.name = name;
@@ -52,5 +53,13 @@ public class Kid {
 	
 	public void addEgg() {
 		this.nb_eggs++;
+	}
+	
+	public boolean getNext() {
+		return this.next;
+	}
+	
+	public void setNext(boolean next) {
+		this.next = next;
 	}
 }

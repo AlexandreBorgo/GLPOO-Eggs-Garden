@@ -127,7 +127,7 @@ public class HUD_game extends JPanel implements MouseListener {
 			ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
 			for(int i=0; i<list_kids.size(); i++ ) {
 				String d = list_kids.get(i).getDirection();
-				System.out.println(i + ": " + list_kids.get(i).getPosX() + " " + list_kids.get(i).getPosY());
+
 				if(d.equals("S")) {
 					g.drawImage(this.kid, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
 				} else if(d.equals("N")) {
@@ -205,7 +205,7 @@ public class HUD_game extends JPanel implements MouseListener {
 				
 				if(this.show == Item.NO_ITEM || this.show == Item.ROCK || this.show == Item.EGG) {
 					map[case_x][case_y] = this.show;
-				} else if(this.show == Item.KID) {
+				} else if(this.show == Item.KID || this.show == Item.KID_TOP || this.show == Item.KID_LEFT || this.show == Item.KID_RIGHT) {
 					ArrayList<Kid> list_kids = this.game.garden.getKidsList();
 					
 					boolean add = true;
@@ -219,9 +219,21 @@ public class HUD_game extends JPanel implements MouseListener {
 					}
 					
 					if(add) {
-						list_kids.add(new Kid(case_x, case_y, "S", null, ""));						
-						map[case_x][case_y] = Item.NO_ITEM;
-						System.out.println("add kid");
+						Kid kid = null;
+						if(this.show == Item.KID) {
+							kid = new Kid(case_x, case_y, "S", null, "");
+						} else if(this.show == Item.KID_TOP) {
+							kid = new Kid(case_x, case_y, "N", null, "");
+						} else if(this.show == Item.KID_LEFT) {
+							kid = new Kid(case_x, case_y, "W", null, "");
+						} else if(this.show == Item.KID_RIGHT) {
+							kid = new Kid(case_x, case_y, "E", null, "");
+						}
+						
+						if(kid != null) {
+							list_kids.add(kid);						
+							map[case_x][case_y] = Item.NO_ITEM;
+						}
 					}					
 				}
 				

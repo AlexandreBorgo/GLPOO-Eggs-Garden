@@ -73,8 +73,9 @@ public class Garden {
 					if(this.map != null) {
 						int px = Character.getNumericValue(line.charAt(2));
 						int py = Character.getNumericValue(line.charAt(4));
+						int egg = Character.getNumericValue(line.charAt(6));
 						this.map[px-1][py-1] = Item.EGG;
-						this.egg_map[px-1][py-1]++;
+						this.egg_map[px-1][py-1] = egg;
 					}
 				}
 				else if(line.charAt(0) == 'R') {

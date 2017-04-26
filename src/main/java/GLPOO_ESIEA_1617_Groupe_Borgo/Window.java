@@ -42,9 +42,7 @@ public class Window extends JFrame implements ActionListener {
 	private JMenuItem pause = new JMenuItem("Pause");
 	private JMenuItem restart = new JMenuItem("Restart");
 	private JMenuItem save = new JMenuItem("Save as..."); 
-	
-	private GridBagLayout girdLayout;
-	
+		
 	private Game game;
 	
 	public Window(Game game) {
@@ -75,6 +73,7 @@ public class Window extends JFrame implements ActionListener {
 		play.addActionListener(this);
 		pause.addActionListener(this);
 		restart.addActionListener(this);
+		save.addActionListener(this);
 
 		this.setContentPane(this.game.hud_game);
 		
@@ -153,6 +152,23 @@ public class Window extends JFrame implements ActionListener {
 			}
 			else {
 				JOptionPane.showMessageDialog(this.game.window, "No garden to restart.", "Restart error", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+		else if(e.getSource() == this.save) {
+			if(this.game.getState() == State.EDITOR_STATE) {
+				if(this.game.garden != null) {
+					boolean saved = false;
+					
+					if(saved) {
+						JOptionPane.showMessageDialog(this.game.window, "Garden saved.", "Save garden", JOptionPane.INFORMATION_MESSAGE);						
+					} else {
+						JOptionPane.showMessageDialog(this.game.window, "Failed to save the garden.", "Save garden", JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					JOptionPane.showMessageDialog(this.game.window, "Empty garden.", "Save garden", JOptionPane.ERROR_MESSAGE);
+				}
+			} else {
+				JOptionPane.showMessageDialog(this.game.window, "Not in editor mode.", "Save garden", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
