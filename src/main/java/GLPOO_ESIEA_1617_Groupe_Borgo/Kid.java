@@ -17,6 +17,7 @@ public class Kid {
 		this.pos_x = pos_x;
 		this.pos_y = pos_y;
 		this.direction = direction;
+		this.setNb_eggs(0);
 	}
 	
 	public int getPosX() {
@@ -52,7 +53,11 @@ public class Kid {
 	}
 	
 	public void addEgg() {
-		this.nb_eggs++;
+		this.setNb_eggs(this.getNb_eggs() + 1);
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 	
 	public boolean getNext() {
@@ -61,5 +66,18 @@ public class Kid {
 	
 	public void setNext(boolean next) {
 		this.next = next;
+	}
+
+	public void setName(String text) {
+		this.name = text;
+		
+	}
+
+	public int getNb_eggs() {
+		return nb_eggs;
+	}
+
+	public void setNb_eggs(int nb_eggs) {
+		this.nb_eggs = nb_eggs;
 	}
 }

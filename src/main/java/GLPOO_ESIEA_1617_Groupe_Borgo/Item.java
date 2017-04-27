@@ -7,5 +7,6 @@ public enum Item {
 	KID_RIGHT,
 	EGG,
 	ROCK,
-	NO_ITEM
+	NO_ITEM,
+	NO
 }

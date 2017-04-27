@@ -28,9 +28,14 @@ public class Game {
 	public void play() {
 		if(this.garden != null) {
 			if(this.thread == null) {
-				this.anim = true;
-				thread = new Thread(new Play());
-				thread.start();
+				if(this.state == State.GAME_STATE) {
+					this.anim = true;
+					thread = new Thread(new Play());
+					thread.start();
+				}
+				else {
+					JOptionPane.showMessageDialog(this.window, "Disable in editor mode.", "Play error", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 			else if(this.thread != null) {				
 				if(this.thread.isAlive()) {
@@ -100,23 +105,31 @@ public class Game {
 								if(path.get(0).equals("A")) {
 									if(d.equals("N")) {
 										if(py > 0) {
-											list_kids.get(i).setPosY(py-1);
-										}	
+											if(!isKidOrRockAt(px, py-1)) {
+												list_kids.get(i).setPosY(py-1);
+											}
+										}
 									}
 									else if(d.equals("W")) {
 										if(px > 0) {
-											list_kids.get(i).setPosX(px-1);
-										}	
+											if(!isKidOrRockAt(px-1, py)) {
+												list_kids.get(i).setPosX(px-1);
+											}
+										}
 									}
 									else if(d.equals("E")) {
 										if(px < size_x-1) {
-											list_kids.get(i).setPosX(px+1);
-										}	
+											if(!isKidOrRockAt(px+1, py)) {
+												list_kids.get(i).setPosX(px+1);
+											}
+										}
 									}
 									else if(d.equals("S")) {
 										if(py < size_y-1) {
-											list_kids.get(i).setPosY(py+1);
-										}							
+											if(!isKidOrRockAt(px, py+1)) {
+												list_kids.get(i).setPosY(py+1);
+											}
+										}						
 									}
 								}
 								else if(path.get(0).equals("G")) {
@@ -129,9 +142,9 @@ public class Game {
 									if(d.equals("N")) list_kids.get(i).setDirection("E");
 									else if(d.equals("W")) list_kids.get(i).setDirection("N");
 									else if(d.equals("E")) list_kids.get(i).setDirection("S");
-									else if(d.equals("S")) list_kids.get(i).setDirection("W");							
+									else if(d.equals("S")) list_kids.get(i).setDirection("W");						
 								}
-								
+
 								path.remove(0);
 								list_kids.get(i).setPath(path);
 								
@@ -154,6 +167,23 @@ public class Game {
 				}				
 			}
 			anim = false;
+			JOptionPane.showMessageDialog(null, "The animation is over.", "Animation end", JOptionPane.INFORMATION_MESSAGE);
+		}
+		
+		public boolean isKidOrRockAt(int px, int py) {
+			ArrayList<Kid> list_kids = garden.getKidsList();			
+			for(int i=0; i<list_kids.size(); i++ ) {
+				if(list_kids.get(i).getPosX() == px && list_kids.get(i).getPosY() == py) {								
+					return true;
+				}
+			}
+			
+			Item map[][] = garden.getMap();			
+			if(map[px][py] == Item.ROCK) {
+				return true;
+			}
+			
+			return false;
 		}
 		
 		public void callRepaint() {
@@ -171,7 +201,6 @@ public class Game {
 	class Editor implements Runnable {
 
 		public void run() {
-			boolean stop;
 			
 			while(editor_play) {
 				

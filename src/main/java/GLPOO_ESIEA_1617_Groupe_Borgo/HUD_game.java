@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -31,7 +32,7 @@ public class HUD_game extends JPanel implements MouseListener {
 	private Image ground;
 	private String image_path = "images/";
 	
-	private Item show;
+	private Item show = Item.NO;
 	
 	public HUD_game(Game game) {
 		this.game = game;
@@ -174,74 +175,162 @@ public class HUD_game extends JPanel implements MouseListener {
 	}
 
 	public void mouseClicked(MouseEvent event) {
-		if(SwingUtilities.isLeftMouseButton(event)) {			
-
-			Point point = event.getPoint();
-			
-			if(point.x < 30) {
-				if(point.y >= 0 && point.y < 30) {
-					this.show = Item.NO_ITEM;
-				} else if(point.y >= 30 && point.y < 60) {
-					this.show = Item.ROCK;				
-				} else if(point.y >= 60 && point.y < 90) {
-					this.show = Item.EGG;
-				} else if(point.y >= 90 && point.y < 120) {
-					this.show = Item.KID;
-				} else if(point.y >= 120 && point.y < 150) {
-					this.show = Item.KID_TOP;
-				} else if(point.y >= 150 && point.y < 180) {
-					this.show = Item.KID_LEFT;
-				} else if(point.y >= 180 && point.y < 210) {
-					this.show = Item.KID_RIGHT;
-				}
-			}
-			else {
-				Point mouse_point = MouseInfo.getPointerInfo().getLocation();
-				Point panel_point = this.game.hud_game.getLocationOnScreen();
-				int case_x = (int) ((mouse_point.x - 35 - panel_point.x) / 30);
-				int case_y = (int) ((mouse_point.y - panel_point.y) / 30);
+		if(this.game.getState() == State.EDITOR_STATE) {
+			if(SwingUtilities.isLeftMouseButton(event)) {			
+	
+				Point point = event.getPoint();
 				
-				Item map[][] = this.game.garden.getMap();
-				
-				if(this.show == Item.NO_ITEM || this.show == Item.ROCK || this.show == Item.EGG) {
-					map[case_x][case_y] = this.show;
-				} else if(this.show == Item.KID || this.show == Item.KID_TOP || this.show == Item.KID_LEFT || this.show == Item.KID_RIGHT) {
-					ArrayList<Kid> list_kids = this.game.garden.getKidsList();
-					
-					boolean add = true;
-					
-					for(int i=0; i<list_kids.size(); i++ ) {
-
-						if(list_kids.get(i).getPosX() == case_x && list_kids.get(i).getPosY() == case_y) {
-							add = false;							
-							break;
-						}
+				if(point.x < 30) {
+					if(point.y >= 0 && point.y < 30) {
+						this.show = Item.NO_ITEM;
+					} else if(point.y >= 30 && point.y < 60) {
+						this.show = Item.ROCK;				
+					} else if(point.y >= 60 && point.y < 90) {
+						this.show = Item.EGG;
+					} else if(point.y >= 90 && point.y < 120) {
+						this.show = Item.KID;
+					} else if(point.y >= 120 && point.y < 150) {
+						this.show = Item.KID_TOP;
+					} else if(point.y >= 150 && point.y < 180) {
+						this.show = Item.KID_LEFT;
+					} else if(point.y >= 180 && point.y < 210) {
+						this.show = Item.KID_RIGHT;
 					}
+				}
+				else {
+					Point mouse_point = MouseInfo.getPointerInfo().getLocation();
+					Point panel_point = this.game.hud_game.getLocationOnScreen();
+					int case_x = (int) ((mouse_point.x - 35 - panel_point.x) / 30);
+					int case_y = (int) ((mouse_point.y - panel_point.y) / 30);
+								
+					Item map[][] = this.game.garden.getMap();
+					int[][] egg_map = this.game.garden.getEggMap();
 					
-					if(add) {
-						Kid kid = null;
-						if(this.show == Item.KID) {
-							kid = new Kid(case_x, case_y, "S", null, "");
-						} else if(this.show == Item.KID_TOP) {
-							kid = new Kid(case_x, case_y, "N", null, "");
-						} else if(this.show == Item.KID_LEFT) {
-							kid = new Kid(case_x, case_y, "W", null, "");
-						} else if(this.show == Item.KID_RIGHT) {
-							kid = new Kid(case_x, case_y, "E", null, "");
+					if(this.show != Item.NO) {					
+						
+						if(this.show == Item.NO_ITEM || this.show == Item.ROCK || this.show == Item.EGG) {
+							// we change the case, add an egg if necessary
+							if(map[case_x][case_y] == Item.EGG || this.show == Item.EGG) {
+								egg_map[case_x][case_y]++;
+								map[case_x][case_y] = this.show;
+							}
+							else {
+								map[case_x][case_y] = this.show;
+								egg_map[case_x][case_y] = 0;						
+							}
+							
+							// if there's a kid on the case we delete him
+							ArrayList<Kid> list_kids = this.game.garden.getKidsList();						
+							
+							for(int i=0; i<list_kids.size(); i++ ) {
+		
+								if(list_kids.get(i).getPosX() == case_x && list_kids.get(i).getPosY() == case_y) {								
+									list_kids.remove(i);							
+									break;
+								}
+							}
+							
+						} else if(this.show == Item.KID || this.show == Item.KID_TOP || this.show == Item.KID_LEFT || this.show == Item.KID_RIGHT) {
+							ArrayList<Kid> list_kids = this.game.garden.getKidsList();
+							
+							boolean add = true;
+							
+							for(int i=0; i<list_kids.size(); i++ ) {
+		
+								if(list_kids.get(i).getPosX() == case_x && list_kids.get(i).getPosY() == case_y) {
+									add = false;							
+									break;
+								}
+							}
+							
+							if(add) {
+								Kid kid = null;
+								if(this.show == Item.KID) {
+									kid = new Kid(case_x, case_y, "S", null, "");
+								} else if(this.show == Item.KID_TOP) {
+									kid = new Kid(case_x, case_y, "N", null, "");
+								} else if(this.show == Item.KID_LEFT) {
+									kid = new Kid(case_x, case_y, "W", null, "");
+								} else if(this.show == Item.KID_RIGHT) {
+									kid = new Kid(case_x, case_y, "E", null, "");
+								}
+								
+								if(kid != null) {
+									list_kids.add(kid);						
+									map[case_x][case_y] = Item.NO_ITEM;
+								}
+								egg_map[case_x][case_y] = 0;
+							}					
 						}
 						
-						if(kid != null) {
-							list_kids.add(kid);						
-							map[case_x][case_y] = Item.NO_ITEM;
+						this.game.garden.setMap(map);
+						this.game.garden.setEggMap(egg_map);
+					}
+					else {
+						
+						if(map[case_x][case_y] == Item.EGG) {
+							Object[] options = {"Accept", "Cancel"};
+							EggEdit ee = new EggEdit(egg_map[case_x][case_y]);
+							int n = JOptionPane.showOptionDialog(this, ee, "Edit egg information", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[1]);
+							
+							if(n == 0) {
+								if(Integer.valueOf(ee.amount.getText()) == 0) {
+									map[case_x][case_y] = Item.NO_ITEM;
+									egg_map[case_x][case_y] = 0;
+									this.game.garden.setEggMap(egg_map);
+									this.game.garden.setMap(map);								
+								}
+								else {
+									egg_map[case_x][case_y] = Integer.valueOf(ee.amount.getText());
+									this.game.garden.setEggMap(egg_map);
+								}
+							}
 						}
-					}					
+						
+						ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
+						Kid selectedKid = null;
+						for(int i=0; i<list_kids.size(); i++ ) {
+							if(list_kids.get(i).getPosX() == case_x && list_kids.get(i).getPosY() == case_y) {
+								selectedKid = list_kids.get(i);
+								break;
+							}
+						}					
+						
+						if(selectedKid != null) {
+							Object[] options = {"Accept", "Cancel"};
+							KidEdit ke = new KidEdit(selectedKid);
+							int n = JOptionPane.showOptionDialog(this, ke, "Edit kid information", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[1]);
+							
+							if(n == 0) {
+								selectedKid.setName(ke.name.getText());	
+								if(ke.direction.getText().equals("N") || ke.direction.getText().equals("S") || ke.direction.getText().equals("W") || ke.direction.getText().equals("E")) {
+									selectedKid.setDirection(ke.direction.getText());
+								} else {
+									JOptionPane.showMessageDialog(this, "Direction not changed.\nPossible values are : N, S, W, E", "Wrong direction.", JOptionPane.ERROR_MESSAGE);
+								}
+								
+								ArrayList<String> path = new ArrayList<String>();
+								String[] c = ke.path.getText().split("");
+								
+								for(int i=0; i<c.length; i++) {
+									if(c[i].equals("A") || c[i].equals("G") || c[i].equals("D")) {
+										path.add(c[i]);
+										selectedKid.setPath(path);
+									}
+									else {
+										JOptionPane.showMessageDialog(this, "Path not complete.\nPossible values are : A, G, D", "Wrong path.", JOptionPane.ERROR_MESSAGE);
+										break;
+									}
+								}				
+							}
+						}
+						
+					}
 				}
-				
-				this.game.garden.setMap(map);
 			}
-		}
-		else if(SwingUtilities.isRightMouseButton(event)) {
-			this.show = Item.NO_ITEM;
+			else if(SwingUtilities.isRightMouseButton(event)) {
+				this.show = Item.NO;
+			}
 		}
 	}
 
