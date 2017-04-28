@@ -20,10 +20,12 @@ public class Garden {
 	private ArrayList<Kid> list_kids;
 	
 	private Game game;
-	
+
 	private File garden_file = null;
-	
-	private boolean loaded = true;
+	private File kid_file = null;
+
+	public boolean loaded = true;
+	public boolean file_loaded = true;
 	
 	public Garden(Game game, int size_x, int size_y) {
 		this.game = game;
@@ -38,9 +40,9 @@ public class Garden {
 				this.map[i][j] = Item.NO_ITEM;
 				this.egg_map[i][j] = 0;
 			}
-		}
+		} 
 		
-		this.list_kids = new ArrayList<Kid>();       
+		this.list_kids = new ArrayList<Kid>();
 	}
 	
 	public Garden(Game game, File file) {
@@ -133,25 +135,26 @@ public class Garden {
 				}
 			}
 			
-			if(loaded == false || this.size_x == 0 || this.size_y == 0) {
+			if(this.size_x == 0 || this.size_y == 0) {
 				this.loaded = false;
 				JOptionPane.showMessageDialog(this.game.window, "This garden file can't be used.\nPlease checkout Help > Graden file to correct your garden file.", "Error in garden file", JOptionPane.ERROR_MESSAGE);
 			}
 			
-			buffer.close();
+			
+			buffer.close();	
 			
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(this.game.window, "File does not exist.", "Load error", JOptionPane.WARNING_MESSAGE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		this.game.hud_game.repaint();
 	}
 	
-	public void save(File file) {
+	public void save(File file_g, File file_k) {
 		try {
-			FileWriter fw = new FileWriter(file);
+			FileWriter fw = new FileWriter(file_g);
+			FileWriter fwK = new FileWriter(file_k);
 			
 			Item map[][] = this.game.garden.getMap();
 			int[][] egg_map = this.game.garden.getEggMap();
@@ -191,18 +194,20 @@ public class Garden {
 					}
 				}
 			
-				fw.write("E " + pos_x + "-" + pos_y + " " + d + " " + path_s + " " + name + "\r\n");
+				fwK.write("E " + pos_x + "-" + pos_y + " " + d + " " + path_s + " " + name + "\r\n");
 			}
-				
-			this.game.garden.setFile(file);
-			
+
 			fw.close();
+			fwK.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 	}
 	
 	public void openkid(File file) {
+		
+		this.kid_file = file;
+		
 		this.list_kids = new ArrayList<Kid>();		
 
 		try {
@@ -224,44 +229,51 @@ public class Garden {
 								int px = Integer.valueOf(pos[0]);
 								int py = Integer.valueOf(pos[1]);
 								String d = data[2];
-	
-								if(!d.equals("E") && !d.equals("W") && !d.equals("S") && !d.equals("N")) {
-									this.loaded = false;
-								}
 								
-								ArrayList<String> path = new ArrayList<String>();
-								String[] c = data[3].split("");
-								
-								for(int i=0; i<c.length; i++) {
-									if(c[i].equals("A") || c[i].equals("D") || c[i].equals("G")) {
-										path.add(c[i]);
+								if(px < this.size_x && py < this.size_y) {	
+									if(!d.equals("E") && !d.equals("W") && !d.equals("S") && !d.equals("N")) {
+										this.file_loaded = false;
 									}
-									else {
-										this.loaded = false;
+									
+									ArrayList<String> path = new ArrayList<String>();
+									String[] c = data[3].split("");
+									
+									for(int i=0; i<c.length; i++) {
+										if(c[i].equals("A") || c[i].equals("D") || c[i].equals("G")) {
+											path.add(c[i]);
+										}
+										else {
+											this.file_loaded = false;
+										}
 									}
-								}
-								
-								String name = data[4];
-													
-								this.list_kids.add(new Kid(px, py, d, path, name));							
+									
+									String name = data[4];
+									
+									this.map[px][py] = Item.NO_ITEM;
+														
+									this.list_kids.add(new Kid(px, py, d, path, name));	
+								}								
 							} catch(NumberFormatException e) {
-								this.loaded = false;
+								this.file_loaded = false;
 							} catch(ArrayIndexOutOfBoundsException e) {
-								this.loaded = false;
+								this.file_loaded = false;
 							}
 						} else {
-							this.loaded = false;
+							this.file_loaded = false;
 						}
 						
 					} else {
-						this.loaded = false;
+						this.file_loaded = false;
 					}
 				}
 			}
 				buffer.close();
+				this.file_loaded = true;
 			
 		} catch (FileNotFoundException e1) {
+			this.file_loaded = false;
 		}  catch (IOException e) {
+			this.file_loaded = false;
 		}
 		
 	}
@@ -308,6 +320,10 @@ public class Garden {
 	
 	public File getFile() {
 		return this.garden_file;
+	}
+
+	public File getKidFile() {
+		return this.kid_file;
 	}
 	
 	public void setFile(File file) {

@@ -100,7 +100,7 @@ public class Window extends JFrame implements ActionListener {
 				if(file.exists()) {
 				    this.game.garden = new Garden(this.game, file);	
 				    
-				    if(!this.game.garden.getLoad()) {
+				    if(!this.game.garden.loaded) {
 				    	this.game.garden = null;
 				    }
 				    				    
@@ -212,13 +212,14 @@ public class Window extends JFrame implements ActionListener {
 		}
 		else if(e.getSource() == this.play) {
 			this.game.play();
-		}
-		else if(e.getSource() == this.pause) {
+		} else if(e.getSource() == this.pause) {
 			this.game.pause();
-		}else if(e.getSource() == this.restart) {
+		} else if(e.getSource() == this.restart) {
 			if(this.game.garden != null) {
 				if(this.game.getState() == State.GAME_STATE) {
+					File file = this.game.garden.getKidFile();
 					this.game.garden = new Garden(this.game, this.game.garden.getFile());
+					if(file != null) this.game.garden.openkid(file);
 					this.game.setAnim(false);
 				}
 				else {
@@ -239,27 +240,29 @@ public class Window extends JFrame implements ActionListener {
 					
 					if (result == JFileChooser.APPROVE_OPTION) {
 						File file = fc.getSelectedFile();
+						File file_g = new File(file.getAbsolutePath() + ".garden");
+						File file_k = new File(file.getAbsolutePath() + ".kids");
 						
 						boolean keep = true;
 						
-						if(!file.exists()) {
-							try {
-								file.createNewFile();
-							} catch (IOException e1) {
-								JOptionPane.showMessageDialog(this, "Impossible to create new file.", "Save garden", JOptionPane.ERROR_MESSAGE);
-							}
+						if(file_g.exists()) {
+							file_g.delete();
 						}
-						else {
-							Object[] options = {"Yes", "No"};
-							int n = JOptionPane.showOptionDialog(this, "Do you want to replace it ?", "File already exists", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-							
-							if(n != 0) {
-								keep = false;
-							}
-						}					
+						
+						if(file_k.exists()) {
+							file_k.delete();
+						}
+						
+						try {
+							file_g.createNewFile();
+							file_k.createNewFile();
+						} catch (IOException e1) {
+							JOptionPane.showMessageDialog(this, "Impossible to create new files.", "Save garden", JOptionPane.ERROR_MESSAGE);
+						}
+									
 							
 						if(keep) {								
-							this.game.garden.save(file);
+							this.game.garden.save(file_g, file_k);
 							JOptionPane.showMessageDialog(this, "Garden saved.", "Save garden", JOptionPane.INFORMATION_MESSAGE);	
 						}						
 					}

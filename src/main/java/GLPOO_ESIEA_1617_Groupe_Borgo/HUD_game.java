@@ -127,18 +127,20 @@ public class HUD_game extends JPanel implements MouseListener {
 				}
 			}
 			
-			ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
-			for(int i=0; i<list_kids.size(); i++ ) {
-				String d = list_kids.get(i).getDirection();
-
-				if(d.equals("S")) {
-					g.drawImage(this.kid, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
-				} else if(d.equals("N")) {
-					g.drawImage(this.kid_top, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
-				} else if(d.equals("W")) {
-					g.drawImage(this.kid_left, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
-				} else if(d.equals("E")) {
-					g.drawImage(this.kid_right, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
+			if(this.game.garden.getKidsList() != null) {
+				ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
+				for(int i=0; i<list_kids.size(); i++ ) {
+					String d = list_kids.get(i).getDirection();
+	
+					if(d.equals("S")) {
+						g.drawImage(this.kid, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
+					} else if(d.equals("N")) {
+						g.drawImage(this.kid_top, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
+					} else if(d.equals("W")) {
+						g.drawImage(this.kid_left, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
+					} else if(d.equals("E")) {
+						g.drawImage(this.kid_right, list_kids.get(i).getPosX()*30+35, list_kids.get(i).getPosY()*30, this);
+					}
 				}
 			}
 			

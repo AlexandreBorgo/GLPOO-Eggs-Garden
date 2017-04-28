@@ -26,22 +26,28 @@ public class Game {
 	}
 
 	public void play() {
-		if(this.garden != null) {
-			if(this.thread == null) {
-				if(this.state == State.GAME_STATE) {
-					this.anim = true;
-					thread = new Thread(new Play());
-					thread.start();
+		if(this.garden != null && this.garden.loaded) {
+			if(this.garden.getKidsList() != null && this.garden.file_loaded) {	
+				if(this.thread == null) {
+					if(this.state == State.GAME_STATE) {
+						this.anim = true;
+						thread = new Thread(new Play());
+						thread.start();
+					}
+					else {
+						JOptionPane.showMessageDialog(this.window, "Disable in editor mode.", "Play error", JOptionPane.WARNING_MESSAGE);
+					}
 				}
-				else {
-					JOptionPane.showMessageDialog(this.window, "Disable in editor mode.", "Play error", JOptionPane.WARNING_MESSAGE);
+				else if(this.thread != null) {				
+					if(this.thread.isAlive()) {
+						this.anim = true;
+					}
 				}
 			}
-			else if(this.thread != null) {				
-				if(this.thread.isAlive()) {
-					this.anim = true;
-				}
+			else {
+				JOptionPane.showMessageDialog(this.window, "No kids loaded.", "Play error", JOptionPane.WARNING_MESSAGE);
 			}
+			
 		}
 		else {
 			JOptionPane.showMessageDialog(this.window, "No garden loaded.", "Play error", JOptionPane.WARNING_MESSAGE);
@@ -59,8 +65,6 @@ public class Game {
 			JOptionPane.showMessageDialog(this.window, "No garden loaded.", "Editor error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
-	
-	
 	
 	public void pause() {
 		if(this.thread != null && this.thread.isAlive()) {
