@@ -33,7 +33,6 @@ public class Window extends JFrame implements ActionListener {
 	private JMenuItem open = new JMenuItem("Open a garden file");
 	private JMenuItem open_kid = new JMenuItem("Open a kids file");
 	private JMenuItem garden_editor = new JMenuItem("New garden");
-	private JMenuItem open_edit = new JMenuItem("Edit a garden");
 	private JMenuItem play = new JMenuItem("Play");
 	private JMenuItem pause = new JMenuItem("Pause");
 	private JMenuItem restart = new JMenuItem("Restart");
@@ -60,7 +59,6 @@ public class Window extends JFrame implements ActionListener {
 		this.file.add(open_kid);
 		this.file.addSeparator();
 		this.file.add(garden_editor);
-		this.file.add(open_edit);
 		this.file.add(saveas);
 		this.action.add(play);
 		this.action.add(pause);
@@ -76,7 +74,6 @@ public class Window extends JFrame implements ActionListener {
 
 		open.addActionListener(this);
 		open_kid.addActionListener(this);
-		open_edit.addActionListener(this);
 		garden_editor.addActionListener(this);
 		play.addActionListener(this);
 		pause.addActionListener(this);
@@ -180,35 +177,6 @@ public class Window extends JFrame implements ActionListener {
 			 this.pack();
 			 this.game.hud_game.repaint();
 		     this.game.editor();			 
-		}
-		else if(e.getSource() == this.open_edit) {
-			
-			JFileChooser fc = new JFileChooser();
-			fc.setCurrentDirectory(new File(System.getProperty("user.home")));
-			int result = fc.showOpenDialog(this);
-			
-			if (result == JFileChooser.APPROVE_OPTION) {
-				File file = fc.getSelectedFile();
-				
-				if(file.exists()) {					
-					this.game.garden = new Garden(this.game, file);	
-					
-					if(!this.game.garden.getLoad()) {
-				    	this.game.garden = null;
-				    }
-				    				    
-				    if(this.game.garden != null) {
-						this.game.setState(State.EDITOR_STATE);
-						this.game.hud_game.setPreferredSize(1+this.game.garden.getSizeX(), Integer.max(this.game.garden.getSizeY(), 7));
-						this.pack();
-						this.game.hud_game.repaint();
-					    this.game.editor();
-				    }
-				}
-				else {
-					JOptionPane.showMessageDialog(this.game.window, "File does not exist.", "Load error", JOptionPane.WARNING_MESSAGE);
-				}
-			}			 
 		}
 		else if(e.getSource() == this.play) {
 			this.game.play();
