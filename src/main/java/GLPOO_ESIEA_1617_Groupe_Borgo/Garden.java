@@ -306,6 +306,15 @@ public class Garden {
 		return this.list_kids;
 	}
 	
+	public Kid getKitAt(int px, int py) {
+		for(Kid k : this.list_kids) {
+			if(k.getPosX() == px && k.getPosY() == py) {
+				return k;
+			}
+		}
+		return null;
+	}
+	
 	public Item getItemAt(int px, int py) {		
 		return this.map[px][py];
 	}

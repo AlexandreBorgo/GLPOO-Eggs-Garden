@@ -1,0 +1,31 @@
+WARNING - 21:41:51: First conversion pass
+WARNING - 21:41:52: Second pass : generating package usages
+WARNING - 21:41:52: Saving .uml resource: 20170428_214152
+WARNING - 21:41:52: Finished saving .uml resource: 20170428_214152
+ERROR - 21:41:52: Multiple exceptions
+----- exceptions : ----------
+unknown : No service found under key 'org.eclipse.papyrus.infra.ui.services.EditorLifecycleManager'
+unknown : No service found under key 'org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor'
+unknown : No service found under key 'org.eclipse.papyrus.infra.ui.services.EditorLifecycleManager'
+unknown : No service found under key 'org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor'
+org.eclipse.papyrus.infra.ui.lifecycleevents.ISaveAndDirtyService : No service registered under 'interface org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor'
+org.eclipse.papyrus.infra.ui.lifecycleevents.ISaveAndDirtyService : Bad state for service 'org.eclipse.papyrus.infra.ui.lifecycleevents.ISaveAndDirtyService'. Expected 'initialized' found 'error'.
+----------------------------- 
+
+WARNING - 21:41:52: Creating class diagrams
+WARNING - 21:42:06: First conversion pass
+WARNING - 21:42:07: Generic post-process : Creating activities
+WARNING - 21:42:07: Second pass : generating package usages
+WARNING - 21:42:07: Saving .uml resource: 20170428_214207
+WARNING - 21:42:07: Finished saving .uml resource: 20170428_214207
+ERROR - 21:42:07: Multiple exceptions
+----- exceptions : ----------
+unknown : No service found under key 'org.eclipse.papyrus.infra.ui.services.EditorLifecycleManager'
+unknown : No service found under key 'org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor'
+unknown : No service found under key 'org.eclipse.papyrus.infra.ui.services.EditorLifecycleManager'
+unknown : No service found under key 'org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor'
+org.eclipse.papyrus.infra.ui.lifecycleevents.ISaveAndDirtyService : No service registered under 'interface org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor'
+org.eclipse.papyrus.infra.ui.lifecycleevents.ISaveAndDirtyService : Bad state for service 'org.eclipse.papyrus.infra.ui.lifecycleevents.ISaveAndDirtyService'. Expected 'initialized' found 'error'.
+----------------------------- 
+
+WARNING - 21:42:07: Creating class diagrams

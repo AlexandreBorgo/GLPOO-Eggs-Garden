@@ -2,7 +2,6 @@ package GLPOO_ESIEA_1617_Groupe_Borgo;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MouseInfo;
