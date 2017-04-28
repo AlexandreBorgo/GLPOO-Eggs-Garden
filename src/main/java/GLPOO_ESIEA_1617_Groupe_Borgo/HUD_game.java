@@ -30,6 +30,7 @@ public class HUD_game extends JPanel implements MouseListener {
 	private Image kid_right;
 	private Image egg;
 	private Image ground;
+	private Image background;
 	private String image_path = "images/";
 	
 	private Item show = Item.NO;
@@ -44,7 +45,8 @@ public class HUD_game extends JPanel implements MouseListener {
 			this.kid_left = ImageIO.read(new File(this.image_path + "kid_1_left.png"));
 			this.kid_right = ImageIO.read(new File(this.image_path + "kid_1_right.png"));
 			this.egg = ImageIO.read(new File(this.image_path + "egg_1.png"));
-			this.ground = ImageIO.read(new File(this.image_path + "ground_1.png"));			
+			this.ground = ImageIO.read(new File(this.image_path + "ground_1.png"));		
+			this.background = ImageIO.read(new File(this.image_path + "background.png"));			
 		} catch (IOException e) {			
 			e.printStackTrace();
 		}
@@ -91,11 +93,7 @@ public class HUD_game extends JPanel implements MouseListener {
 				}
 			}
 			else {
-				Font font = new Font("Courier", Font.BOLD, 20);
-			    g.setFont(font);
-			    g.setColor(Color.black);          
-			    g.drawString("No garden loaded, you can open a garden ", 10, 100);
-			    g.drawString("or create one under File menu.", 10, 125); 
+				g.drawImage(this.background, 0, 0, this);
 			}
 		}
 		else {

@@ -21,9 +21,9 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 public class Window extends JFrame implements ActionListener {
 	
-	private int width = 640;
-	private int height = 580;
-	private String title = "Egg Garden";
+	private int width = 400;
+	private int height = 400;
+	private String title = "Pokeballs Garden";
 	
 	private JMenuBar menu = new JMenuBar();
 	private JMenu file = new JMenu("File");
@@ -220,7 +220,7 @@ public class Window extends JFrame implements ActionListener {
 					File file = this.game.garden.getKidFile();
 					this.game.garden = new Garden(this.game, this.game.garden.getFile());
 					if(file != null) this.game.garden.openkid(file);
-					this.game.setAnim(false);
+					this.game.restart();
 				}
 				else {
 					JOptionPane.showMessageDialog(this, "Disable in editor mode.", "Restart error", JOptionPane.WARNING_MESSAGE);

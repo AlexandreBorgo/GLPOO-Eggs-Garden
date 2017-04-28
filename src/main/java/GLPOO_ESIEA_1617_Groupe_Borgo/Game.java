@@ -15,7 +15,7 @@ public class Game {
 	private Thread thread = null;
 	private Thread thread_editor = null;
 	private boolean anim = true;
-	private boolean game_play = true;
+	public boolean game_play = true;
 	private boolean editor_play = true;
 	
 	private State state = State.GAME_STATE;
@@ -38,9 +38,9 @@ public class Game {
 						JOptionPane.showMessageDialog(this.window, "Disable in editor mode.", "Play error", JOptionPane.WARNING_MESSAGE);
 					}
 				}
-				else if(this.thread != null) {				
+				else if(this.thread != null) {		
 					if(this.thread.isAlive()) {
-						this.anim = true;
+						this.anim = true;		
 					}
 				}
 			}
@@ -48,6 +48,33 @@ public class Game {
 				JOptionPane.showMessageDialog(this.window, "No kids loaded.", "Play error", JOptionPane.WARNING_MESSAGE);
 			}
 			
+		}
+		else {
+			JOptionPane.showMessageDialog(this.window, "No garden loaded.", "Play error", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+	
+	public void restart() {
+		if(this.garden != null && this.garden.loaded) {
+			if(this.garden.getKidsList() != null && this.garden.file_loaded) {	
+				if(this.thread != null) {
+					if(this.state == State.GAME_STATE) {
+						game_play = true;
+						anim = false;
+						thread = new Thread(new Play());
+						thread.start();
+					}
+					else {
+						JOptionPane.showMessageDialog(this.window, "Disable in editor mode.", "Play error", JOptionPane.WARNING_MESSAGE);
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(this.window, "Need to start before restart.", "Play error", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+			else {
+				JOptionPane.showMessageDialog(this.window, "No kids loaded.", "Play error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 		else {
 			JOptionPane.showMessageDialog(this.window, "No garden loaded.", "Play error", JOptionPane.WARNING_MESSAGE);
@@ -68,15 +95,12 @@ public class Game {
 	
 	public void pause() {
 		if(this.thread != null && this.thread.isAlive()) {
-			this.anim = false;
+			this.anim = false;		
+			System.out.println("pause");
 		}
 		else {
 			JOptionPane.showMessageDialog(this.window, "No animation to pause.", "Pause error", JOptionPane.WARNING_MESSAGE);
 		}
-	}
-	
-	public void stop() {
-		this.thread.interrupt();
 	}
 	
 	class Play implements Runnable {
