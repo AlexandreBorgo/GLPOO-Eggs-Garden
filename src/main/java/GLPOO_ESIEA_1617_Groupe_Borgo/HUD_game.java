@@ -74,17 +74,19 @@ public class HUD_game extends JPanel implements MouseListener {
 					}
 				}
 				
-				ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
-				for(int i=0; i<list_kids.size(); i++ ) {
-					String d = list_kids.get(i).getDirection();
-					if(d.equals("S")) {
-						g.drawImage(this.kid, list_kids.get(i).getPosX()*30, list_kids.get(i).getPosY()*30, this);
-					} else if(d.equals("N")) {
-						g.drawImage(this.kid_top, list_kids.get(i).getPosX()*30, list_kids.get(i).getPosY()*30, this);
-					} else if(d.equals("W")) {
-						g.drawImage(this.kid_left, list_kids.get(i).getPosX()*30, list_kids.get(i).getPosY()*30, this);
-					} else if(d.equals("E")) {
-						g.drawImage(this.kid_right, list_kids.get(i).getPosX()*30, list_kids.get(i).getPosY()*30, this);
+				if(this.game.garden.getKidsList() != null) {
+					ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
+					for(int i=0; i<list_kids.size(); i++ ) {
+						String d = list_kids.get(i).getDirection();
+						if(d.equals("S")) {
+							g.drawImage(this.kid, list_kids.get(i).getPosX()*30, list_kids.get(i).getPosY()*30, this);
+						} else if(d.equals("N")) {
+							g.drawImage(this.kid_top, list_kids.get(i).getPosX()*30, list_kids.get(i).getPosY()*30, this);
+						} else if(d.equals("W")) {
+							g.drawImage(this.kid_left, list_kids.get(i).getPosX()*30, list_kids.get(i).getPosY()*30, this);
+						} else if(d.equals("E")) {
+							g.drawImage(this.kid_right, list_kids.get(i).getPosX()*30, list_kids.get(i).getPosY()*30, this);
+						}
 					}
 				}
 			}
@@ -146,7 +148,7 @@ public class HUD_game extends JPanel implements MouseListener {
 			int case_y = (int) ((mouse_point.y - panel_point.y) / 30);
 			
 			if(mouse_point.x - 35 - panel_point.x >= 0) {
-				if(case_x >= 0 && case_x <= 9 && case_y >= 0 && case_y <= 9) {
+				if(case_x >= 0 && case_x <= this.game.garden.getSizeX() && case_y >= 0 && case_y <= this.game.garden.getSizeY()) {
 					if(this.show == Item.NO_ITEM) {
 						g.drawImage(this.ground, case_x*30+35, case_y*30, this);
 					} else if(this.show == Item.ROCK) {

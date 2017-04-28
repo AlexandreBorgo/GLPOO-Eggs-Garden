@@ -80,4 +80,11 @@ public class Kid {
 	public void setNb_eggs(int nb_eggs) {
 		this.nb_eggs = nb_eggs;
 	}
+	public String getStringPath() {
+		String path = "";
+		for(String s : this.path) {
+			path += s;
+		}
+		return path;
+	}
 }

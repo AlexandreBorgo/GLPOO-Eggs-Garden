@@ -5,9 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.JFileChooser;
@@ -32,15 +30,14 @@ public class Window extends JFrame implements ActionListener {
 	private JMenu action = new JMenu("Action");
 	private JMenu help = new JMenu("Help");
 
-	private JMenuItem open = new JMenuItem("Open...");
-	private JMenuItem load = new JMenuItem("Load from editor");
+	private JMenuItem open = new JMenuItem("Open a garden file");
+	private JMenuItem open_kid = new JMenuItem("Open a kids file");
 	private JMenuItem garden_editor = new JMenuItem("New garden");
 	private JMenuItem open_edit = new JMenuItem("Edit a garden");
 	private JMenuItem play = new JMenuItem("Play");
 	private JMenuItem pause = new JMenuItem("Pause");
 	private JMenuItem restart = new JMenuItem("Restart");
-	private JMenuItem saveas = new JMenuItem("Save as..."); 
-	private JMenuItem save = new JMenuItem("Save"); 
+	private JMenuItem saveas = new JMenuItem("Save as...");
 	private JMenuItem help_file = new JMenuItem("Help about File menu"); 
 	private JMenuItem help_action = new JMenuItem("Help about Action menu"); 
 	private JMenuItem help_editor = new JMenuItem("Help about Editor"); 
@@ -60,11 +57,10 @@ public class Window extends JFrame implements ActionListener {
 		this.addWindowListener(new ExitListener());
 
 		this.file.add(open);
-		this.file.add(load);
+		this.file.add(open_kid);
 		this.file.addSeparator();
 		this.file.add(garden_editor);
 		this.file.add(open_edit);
-		this.file.add(save);
 		this.file.add(saveas);
 		this.action.add(play);
 		this.action.add(pause);
@@ -79,14 +75,13 @@ public class Window extends JFrame implements ActionListener {
 		this.setJMenuBar(menu);
 
 		open.addActionListener(this);
-		load.addActionListener(this);
+		open_kid.addActionListener(this);
 		open_edit.addActionListener(this);
 		garden_editor.addActionListener(this);
 		play.addActionListener(this);
 		pause.addActionListener(this);
 		restart.addActionListener(this);
 		saveas.addActionListener(this);
-		save.addActionListener(this);
 
 		this.setContentPane(this.game.hud_game);
 		
@@ -103,7 +98,6 @@ public class Window extends JFrame implements ActionListener {
 				File file = fc.getSelectedFile();
 				
 				if(file.exists()) {
-				    this.game.setState(State.GAME_STATE);
 				    this.game.garden = new Garden(this.game, file);	
 				    
 				    if(!this.game.garden.getLoad()) {
@@ -111,6 +105,7 @@ public class Window extends JFrame implements ActionListener {
 				    }
 				    				    
 				    if(this.game.garden != null) {
+					    this.game.setState(State.GAME_STATE);
 						this.game.hud_game.setPreferredSize(this.game.garden.getSizeX(), this.game.garden.getSizeY());
 				        this.game.window.pack();
 				        this.game.hud_game.repaint();
@@ -121,38 +116,26 @@ public class Window extends JFrame implements ActionListener {
 				}
 			}
 		}
-		else if(e.getSource() == load) {
-			if(this.game.getState() == State.EDITOR_STATE) {
-				if(this.game.garden != null) {
-					if(this.game.garden.getFile() != null) {
-						Object[] options = {"Continue", "Cancel"};
-						int n = JOptionPane.showOptionDialog(this, "The garden must be saved before loaded. Do you want to quit ?", "Quit editor mode ?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-						
-						if(n == 0) {
-								
-								if(this.game.garden.getFile().exists()) {
-								    this.game.setState(State.GAME_STATE);
-								    this.game.garden = new Garden(this.game, this.game.garden.getFile());	
-									this.game.hud_game.setPreferredSize(this.game.garden.getSizeX(), this.game.garden.getSizeY());
-							        this.game.window.pack();
-							        this.game.hud_game.repaint();
-								}
-								else {
-									JOptionPane.showMessageDialog(this.game.window, "File does not exist.", "Open error", JOptionPane.WARNING_MESSAGE);
-								}
-							
-						}
+		else if(e.getSource() == open_kid) {
+			if(this.game.garden != null) {
+				JFileChooser fc = new JFileChooser();
+				fc.setCurrentDirectory(new File(System.getProperty("user.home")));
+				int result = fc.showOpenDialog(this);
+				
+				if (result == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					
+					if(file.exists()) {
+						this.game.garden.openkid(file);
+						this.game.hud_game.repaint();
 					}
 					else {
-						JOptionPane.showMessageDialog(this.game.window, "The garden must be saved before loaded.", "Load error", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(this.game.window, "File does not exist.", "Open error", JOptionPane.WARNING_MESSAGE);
 					}
-				}
-				else {
-					JOptionPane.showMessageDialog(this.game.window, "No garden.", "Load error", JOptionPane.WARNING_MESSAGE);
 				}
 			}
 			else {
-				JOptionPane.showMessageDialog(this.game.window, "Not in editor mode.", "Load error", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this.game.window, "You need to open a garden file first.", "Open error", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		else if(e.getSource() == this.garden_editor) {
@@ -208,12 +191,19 @@ public class Window extends JFrame implements ActionListener {
 				File file = fc.getSelectedFile();
 				
 				if(file.exists()) {					
-					this.game.setState(State.EDITOR_STATE);
 					this.game.garden = new Garden(this.game, file);	
-					this.game.hud_game.setPreferredSize(1+this.game.garden.getSizeX(), Integer.max(this.game.garden.getSizeY(), 7));
-					this.pack();
-					this.game.hud_game.repaint();
-				    this.game.editor();				    
+					
+					if(!this.game.garden.getLoad()) {
+				    	this.game.garden = null;
+				    }
+				    				    
+				    if(this.game.garden != null) {
+						this.game.setState(State.EDITOR_STATE);
+						this.game.hud_game.setPreferredSize(1+this.game.garden.getSizeX(), Integer.max(this.game.garden.getSizeY(), 7));
+						this.pack();
+						this.game.hud_game.repaint();
+					    this.game.editor();
+				    }
 				}
 				else {
 					JOptionPane.showMessageDialog(this.game.window, "File does not exist.", "Load error", JOptionPane.WARNING_MESSAGE);
@@ -225,70 +215,7 @@ public class Window extends JFrame implements ActionListener {
 		}
 		else if(e.getSource() == this.pause) {
 			this.game.pause();
-		}else if(e.getSource() == this.save) {
-			if(this.game.getState() == State.EDITOR_STATE) {
-				if(this.game.garden != null) {
-					if(this.game.garden.getFile() != null) {
-						try {
-							FileWriter fw = new FileWriter(this.game.garden.getFile());
-							
-							Item map[][] = this.game.garden.getMap();
-							int[][] egg_map = this.game.garden.getEggMap();
-							int size_x = this.game.garden.getSizeX();
-							int size_y = this.game.garden.getSizeY();
-							
-							fw.write("J " + size_x + " " + size_y + "\r\n");								
-							
-							for(int i=0; i<size_x; i++) {
-								for(int j=0; j<size_y; j++) {
-									if(map[i][j] == Item.ROCK) {
-										fw.write("R " + i + "-" + j + "\r\n");
-									} else if(map[i][j] == Item.EGG) {
-										fw.write("C " + i + "-" + j + " " + egg_map[i][j] + "\r\n");
-									}
-								}
-							}
-							
-							ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
-							for(int i=0; i<list_kids.size(); i++ ) {
-								
-								int pos_x = list_kids.get(i).getPosX();
-								int pos_y = list_kids.get(i).getPosY();
-								String d = list_kids.get(i).getDirection();
-								String name = list_kids.get(i).getName();
-								
-								String path_s = "";
-								ArrayList<String> path_a = list_kids.get(i).getPath();
-								
-								if(path_a != null) {
-									for(int j=0; j<path_a.size(); j++) {
-										path_s = path_s + path_a.get(j);
-									}
-								}
-							
-								fw.write("E " + pos_x + "-" + pos_y + " " + d + " " + path_s + " " + name + "\r\n");
-							}
-							
-							JOptionPane.showMessageDialog(this, "Garden saved.", "Save garden", JOptionPane.INFORMATION_MESSAGE);
-							
-							fw.close();
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						}
-					}
-					else {
-						JOptionPane.showMessageDialog(this, "No file selected.", "Save garden", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-				else {
-					JOptionPane.showMessageDialog(this, "Empty garden.", "Save garden", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-			else {
-				JOptionPane.showMessageDialog(this, "No garden to save.", "Save garden", JOptionPane.ERROR_MESSAGE);
-			}
-		}
-		else if(e.getSource() == this.restart) {
+		}else if(e.getSource() == this.restart) {
 			if(this.game.garden != null) {
 				if(this.game.getState() == State.GAME_STATE) {
 					this.game.garden = new Garden(this.game, this.game.garden.getFile());
@@ -331,56 +258,10 @@ public class Window extends JFrame implements ActionListener {
 							}
 						}					
 							
-							if(keep) {								
-								try {
-									FileWriter fw = new FileWriter(file);
-									
-									Item map[][] = this.game.garden.getMap();
-									int[][] egg_map = this.game.garden.getEggMap();
-									int size_x = this.game.garden.getSizeX();
-									int size_y = this.game.garden.getSizeY();
-									
-									fw.write("J " + size_x + " " + size_y + "\r\n");								
-									
-									for(int i=0; i<size_x; i++) {
-										for(int j=0; j<size_y; j++) {
-											if(map[i][j] == Item.ROCK) {
-												fw.write("R " + i + "-" + j + "\r\n");
-											} else if(map[i][j] == Item.EGG) {
-												fw.write("C " + i + "-" + j + " " + egg_map[i][j] + "\r\n");
-											}
-										}
-									}
-									
-									ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
-									for(int i=0; i<list_kids.size(); i++ ) {
-										
-										int pos_x = list_kids.get(i).getPosX();
-										int pos_y = list_kids.get(i).getPosY();
-										String d = list_kids.get(i).getDirection();
-										String name = list_kids.get(i).getName();
-										
-										String path_s = "";
-										ArrayList<String> path_a = list_kids.get(i).getPath();
-										
-										if(path_a != null) {
-											for(int j=0; j<path_a.size(); j++) {
-												path_s = path_s + path_a.get(j);
-											}
-										}
-									
-										fw.write("E " + pos_x + "-" + pos_y + " " + d + " " + path_s + " " + name + "\r\n");
-									}
-									
-									JOptionPane.showMessageDialog(this, "Garden saved.", "Save garden", JOptionPane.INFORMATION_MESSAGE);		
-									this.game.garden.setFile(file);
-									
-									fw.close();
-								} catch (IOException e1) {
-									e1.printStackTrace();
-								}
-							}
-						
+						if(keep) {								
+							this.game.garden.save(file);
+							JOptionPane.showMessageDialog(this, "Garden saved.", "Save garden", JOptionPane.INFORMATION_MESSAGE);	
+						}						
 					}
 					else {
 						JOptionPane.showMessageDialog(this, "Unknown error.", "Save error", JOptionPane.WARNING_MESSAGE);
@@ -389,7 +270,7 @@ public class Window extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(this, "Empty garden.", "Save garden", JOptionPane.ERROR_MESSAGE);
 				}
 			} else {
-				JOptionPane.showMessageDialog(this, "Not in editor mode.", "Save garden", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Disable in game mode.", "Save garden", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

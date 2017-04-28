@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -48,8 +49,6 @@ public class Garden {
 		
 		this.size_x = 0;
 		this.size_y = 0;
-		
-		this.list_kids = new ArrayList<Kid>();
 		
 		try {			
 			BufferedReader  buffer = new BufferedReader(new FileReader(file));			
@@ -132,7 +131,92 @@ public class Garden {
 						this.loaded = false;
 					}
 				}
-				else if(data[0].equals("E")) {
+			}
+			
+			if(loaded == false || this.size_x == 0 || this.size_y == 0) {
+				this.loaded = false;
+				JOptionPane.showMessageDialog(this.game.window, "This garden file can't be used.\nPlease checkout Help > Graden file to correct your garden file.", "Error in garden file", JOptionPane.ERROR_MESSAGE);
+			}
+			
+			buffer.close();
+			
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(this.game.window, "File does not exist.", "Load error", JOptionPane.WARNING_MESSAGE);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		this.game.hud_game.repaint();
+	}
+	
+	public void save(File file) {
+		try {
+			FileWriter fw = new FileWriter(file);
+			
+			Item map[][] = this.game.garden.getMap();
+			int[][] egg_map = this.game.garden.getEggMap();
+			int size_x = this.game.garden.getSizeX();
+			int size_y = this.game.garden.getSizeY();
+			
+			fw.write("J " + size_x + " " + size_y + "\r\n");								
+			
+			for(int i=0; i<size_x; i++) {
+				for(int j=0; j<size_y; j++) {
+					if(map[i][j] == Item.ROCK) {
+						fw.write("R " + i + "-" + j + "\r\n");
+					} else if(map[i][j] == Item.EGG) {
+						fw.write("C " + i + "-" + j + " " + egg_map[i][j] + "\r\n");
+					}
+				}
+			}
+			
+			ArrayList<Kid> list_kids = this.game.garden.getKidsList(); 
+			for(int i=0; i<list_kids.size(); i++ ) {
+				
+				int pos_x = list_kids.get(i).getPosX();
+				int pos_y = list_kids.get(i).getPosY();
+				String d = list_kids.get(i).getDirection();
+				String name = list_kids.get(i).getName();
+				
+				if(name.equals("")) {
+					name = "Jules";
+				}
+				
+				String path_s = "";
+				ArrayList<String> path_a = list_kids.get(i).getPath();
+				
+				if(path_a != null) {
+					for(int j=0; j<path_a.size(); j++) {
+						path_s = path_s + path_a.get(j);
+					}
+				}
+			
+				fw.write("E " + pos_x + "-" + pos_y + " " + d + " " + path_s + " " + name + "\r\n");
+			}
+				
+			this.game.garden.setFile(file);
+			
+			fw.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	public void openkid(File file) {
+		this.list_kids = new ArrayList<Kid>();		
+
+		try {
+
+			BufferedReader buffer;
+			buffer = new BufferedReader(new FileReader(file));
+					
+			String line = "";
+			
+			while ((line = buffer.readLine()) != null) {				
+				
+				String[] data = line.split(" ");
+			
+				if(data[0].equals("E")) {
 					if(this.map != null) {
 						if(data.length >= 5) {							
 							try {
@@ -158,7 +242,7 @@ public class Garden {
 								}
 								
 								String name = data[4];
-														
+													
 								this.list_kids.add(new Kid(px, py, d, path, name));							
 							} catch(NumberFormatException e) {
 								this.loaded = false;
@@ -174,21 +258,12 @@ public class Garden {
 					}
 				}
 			}
+				buffer.close();
 			
-			if(loaded == false || this.size_x == 0 || this.size_y == 0) {
-				this.loaded = false;
-				JOptionPane.showMessageDialog(this.game.window, "This garden file can't be used.\nPlease checkout Help > Graden file to correct your garden file.", "Error in garden file", JOptionPane.ERROR_MESSAGE);
-			}
-			
-			buffer.close();
-			
-		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(this.game.window, "File does not exist.", "Load error", JOptionPane.WARNING_MESSAGE);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (FileNotFoundException e1) {
+		}  catch (IOException e) {
 		}
 		
-		this.game.hud_game.repaint();
 	}
 	
 	public Item[][] getMap() {
@@ -241,5 +316,9 @@ public class Garden {
 	
 	public boolean getLoad() {
 		return this.loaded;
+	}
+	
+	public Item getCase(int case_x, int case_y) {
+		return this.map[case_x][case_y];
 	}
 }
